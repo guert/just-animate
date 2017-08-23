@@ -1,4 +1,4 @@
-import { isArrayLike, isDefined } from './inspect'
+import { isArrayLike, isDefined, isFunction } from './inspect';
 import { _ } from './constants'
 
 export interface IList<T> {
@@ -128,6 +128,7 @@ function pushAll<T>(items: T[], newItems: T[]) {
 
 export type Action<T1> = (input: T1, index: number, len: number) => void
 export type ActionWithBreak<T1> = (input: T1, index: number, len: number) => void | false
+export type Mapper<T1, T2> = (t1?: T1, index?: number, len?: number) => T2
 
 /**
  * iterates over all items until [false] is returned or it runs out of items
@@ -144,4 +145,20 @@ export function forEach<T1>(items: IList<T1>, action: Action<T1> | ActionWithBre
       }
     }
   }
+}
+
+/**
+ * iterates over all items until [false] is returned or it runs out of items
+ * @param items 
+ * @param action 
+ */
+export function map<TInput, TOutput>(items: IList<TInput>, func: Mapper<TInput, TOutput>) {
+  if (!items) {
+    return []
+  }
+  var results: TOutput[] = []
+  for (let i = 0, ilen = items.length; i < ilen; i++) {
+    push(results, func(items[i], i, ilen))
+  }
+  return results
 }

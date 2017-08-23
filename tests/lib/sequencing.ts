@@ -78,16 +78,17 @@ describe('sequencing', () => {
     ]);
 
     const actual = timeline.getEffects()
+     
     assert.deepEqual<{}>(actual, [
       {
+        plugin: 'props',          
         target: { id: 'target1' },
+        prop: 'opacity',                
         from: 100,
         to: 1100,
-        plugin: 'props',  
-        prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
+          { easing: 'linear', offset: 0, value: 1, interpolate: undefined  },
+          { easing: 'linear', offset: 1, value: 0, interpolate: undefined  }
         ]
       },
       {
@@ -114,8 +115,8 @@ describe('sequencing', () => {
       },
       {
         target: { id: 'target4' },
-        from: 1300,
-        to: 2300,
+        from: 1000,
+        to: 2000,
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [

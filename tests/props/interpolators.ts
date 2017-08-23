@@ -47,7 +47,7 @@ describe('interpolators', () => {
         'hsl(' + Math.round(left + (right - left) * offset) + ', 50%, 50%)'
       );
     }
-
+    
     const timeline = animate({
       targets: target,
       duration: 1000,

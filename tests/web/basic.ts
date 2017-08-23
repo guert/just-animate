@@ -39,7 +39,7 @@ describe('basic', () => {
       })
 
     const actual = t1.getEffects()
-
+    
     assert.deepEqual(actual, [{
       target: target,
       from: 200,

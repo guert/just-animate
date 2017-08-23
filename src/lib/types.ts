@@ -1,13 +1,18 @@
+
+export type PropertyValue = string | number
+
+export type PropertyResolver<T> = T | PropertyFunction<T>
+
 export interface WebPropertyOptions {
-  [name: string]: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+  [name: string]: PropertyResolver<PropertyValue> | (PropertyResolver<PropertyValue> | PropertyObject)[]
 }
 
 export interface PropertyOptions {
-  [name: string]: PropertyValueOptions | PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+  [name: string]: PropertyValueOptions | PropertyResolver<PropertyValue> | (PropertyObject | PropertyResolver<PropertyValue>)[]
 }
 
 export interface PropertyValueOptions { 
-  value: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+  value: PropertyResolver<PropertyValue> | (PropertyObject | PropertyResolver<PropertyValue>)[]
   easing?: string
   interpolate?: Interpolator
 }
@@ -23,8 +28,8 @@ export interface Interpolator {
 export interface Keyframe {
   offset: number
   value: string | number
-  easing: string
-  interpolate: Function
+  easing?: string
+  interpolate?: Function
   simpleFn?: boolean
 }
 
@@ -36,15 +41,11 @@ export interface PropertyFunction<T> {
 }
 
 export interface PropertyObject {
-  value: string | number
+  value: string | number | (string | number)[]
   offset?: number
   easing?: string
   interpolate?: Interpolator
 }
-
-export type PropertyValue = string | number | PropertyObject
-
-export type PropertyResolver<T> = T | PropertyFunction<T>
 
 export interface AnimationController {
   cancel(): void
@@ -96,7 +97,6 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-
   delay?: PropertyResolver<number>
   easing?: string
   endDelay?: PropertyResolver<number>
@@ -123,13 +123,15 @@ export interface AnimationOptions {
   from: number
   to: number
   duration: number
-  easing?: string
-  targets: AnimationTarget[]
-  stagger?: number
-  delay?: PropertyResolver<number>
-  endDelay?: PropertyResolver<number>
-  props?: PropertyOptions
-  web?: WebPropertyOptions
+  easing: string
+  targets: string[]
+  stagger: number
+  delay: number | string
+  endDelay: number | string
+  interpolate: Interpolator
+  plugin: string
+  prop: string
+  values: Keyframe[]
 }
 
 export interface Effect {
@@ -149,19 +151,18 @@ export interface ITimeline {
   currentTime?: number
   duration?: number
   playbackRate?: number
-  _nextTime?: number
-  _state?: number
-  _configs?: {
-    [plugin: string]: TargetConfiguration[]
-  }
+  _alternate?: boolean  
   _effects?: AnimationTimelineController[]
+  _options?: AnimationOptions[]
+  _iteration?: number  
+  _listeners?: { [key: string]: { (time: number): void }[] }  
+  _nextTime?: number  
+  _rate?: number  
+  _refs?: { [atName: string]: any }
   _repeat?: number
-  _iteration?: number
+  _state?: number  
+  _tick?: (delta: number) => void  
   _time?: number
-  _rate?: number
-  _alternate?: boolean
-  _listeners?: { [key: string]: { (time: number): void }[] }
-  _tick?: (delta: number) => void
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition
